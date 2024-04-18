@@ -17,7 +17,7 @@ export class MagicLoginStrategy extends PassportStrategy(
       jwtOptions: {
         expiresIn: '5m',
       },
-      callbackUrl: process.env.MAGIC_LINK_CALLBACK_URL + '/auth/login/callback',
+      callbackUrl: process.env.MAGIC_LINK_CALLBACK_URL,
       sendMagicLink: async (destionation: string, href: string) => {
         this.logger.debug(
           `Sending magic link to ${destionation} with href ${href}`,
