@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { User } from './entities/user.entity';
+import { SignupDto } from 'src/auth/dtos/signup.dto';
 
 @Injectable()
 export class UsersService {
@@ -10,10 +12,21 @@ export class UsersService {
       name: 'felipe',
       created_at: new Date(),
       updated_at: new Date(),
+      username: 'felipe',
     },
   ];
 
-   findOneByEmail(email: string) {
+  constructor(private prisma: PrismaService) {}
+
+  async findByEmail(email:string) {
+    return await this.prisma.user.findFirst({ where: { email } });
+  }
+
+  async signupUser(user:SignupDto) {
+    return await this.prisma.user.create({ data: user });
+  }
+
+  findOneByEmail(email: string) {
     return this.users.find((user) => user.email === email);
   }
 }

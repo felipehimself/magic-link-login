@@ -1,11 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import { SignupDto } from './dtos/signup.dto';
 
 @Injectable()
 export class AuthService {
+  
   constructor(
     private readonly userService: UsersService,
     private jwtService: JwtService,
@@ -40,5 +42,15 @@ export class AuthService {
     ]);
 
     return { accessToken, refreshToken };
+  }
+
+ async signup(user: SignupDto) {
+    const exists = await this.userService.findByEmail(user.email);
+    
+    if(!exists) {
+      return await this.userService.signupUser(user);
+    }
+
+    throw new HttpException('Email already in use', HttpStatus.FORBIDDEN );
   }
 }

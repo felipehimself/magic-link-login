@@ -11,6 +11,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dtos/login.dto';
+import { SignupDto } from './dtos/signup.dto';
 import { MagicLoginStrategy } from './strategies/magic-login.strategy';
 
 @Controller('auth')
@@ -44,5 +45,12 @@ export class AuthController {
       success: true,
       message: 'Successfully logged in!',
     });
+  }
+
+  @Post('sign-up')
+  async signup(@Body() body: SignupDto) {
+    const user = await this.authService.signup(body);
+    
+    return user;
   }
 }
