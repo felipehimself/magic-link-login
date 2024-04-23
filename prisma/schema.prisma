@@ -19,10 +19,20 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  email      String   @unique
-  name       String
-  username   String
-  created_at DateTime @default(now())
-  update_at  DateTime @updatedAt
+  id                String          @id @default(uuid())
+  email             String          @unique
+  name              String
+  username          String
+  created_at        DateTime        @default(now())
+  update_at         DateTime        @updatedAt
+  account_confirmed ConfirmAccount?
+}
+
+model ConfirmAccount {
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String   @unique
+  confirmed         Boolean  @default(false)
+  code_confirmation String   @unique
+  created_at        DateTime @default(now())
+  update_at         DateTime @updatedAt
 }

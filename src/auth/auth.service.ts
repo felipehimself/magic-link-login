@@ -1,17 +1,24 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import nanoid from 'nanoid';
+import { EmailService } from 'src/email/email.service';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { SignupDto } from './dtos/signup.dto';
 
 @Injectable()
 export class AuthService {
-  
   constructor(
     private readonly userService: UsersService,
     private jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
   ) {}
 
   validateUser(email: string) {
@@ -44,13 +51,33 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
- async signup(user: SignupDto) {
+  async signup(user: SignupDto) {
     const exists = await this.userService.findByEmail(user.email);
-    
-    if(!exists) {
-      return await this.userService.signupUser(user);
+
+    if (!exists) {
+      const codeConfirmation = nanoid.nanoid(10);
+      const newUser = await this.userService.createUser(user, codeConfirmation);
+
+      return await this.emailService.sendEmailConfirmation(
+        newUser.email,
+        newUser.id,
+        codeConfirmation,
+      );
     }
 
-    throw new HttpException('Email already in use', HttpStatus.FORBIDDEN );
+    throw new HttpException('Email already in use', HttpStatus.FORBIDDEN);
+  }
+
+  async confirmAccount(userId: string, codeConfirmation: string) {
+    const user = await this.userService.findById(userId);
+    if (!user) {
+      throw new HttpException('Invalid credentials', HttpStatus.FORBIDDEN);
+    }
+
+    if (user.account_confirmed.code_confirmation !== codeConfirmation) {
+      throw new HttpException('Invalid credentials', HttpStatus.FORBIDDEN);
+    }
+
+    return await this.userService.confirmAccount(userId);
   }
 }
