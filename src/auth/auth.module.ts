@@ -7,9 +7,10 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { MagicLoginStrategy } from './strategies/magic-login.strategy';
 import { EmailModule } from 'src/email/email.module';
+import { CronModule } from 'src/cron/cron.module';
 
 @Module({
-  imports: [UsersModule, PassportModule, JwtModule.register({}), EmailModule],
+  imports: [UsersModule, PassportModule, JwtModule.register({}), EmailModule, CronModule],
   controllers: [AuthController],
   providers: [AuthService, MagicLoginStrategy, JwtStrategy],
 })

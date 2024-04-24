@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { EmailModule } from './email/email.module';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { EmailModule } from './email/email.module';
     UsersModule,
     AuthModule,
     PrismaModule,
-    EmailModule
+    EmailModule,
+    CronModule
   ],
   controllers: [AppController],
   providers: [AppService],

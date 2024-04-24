@@ -6,7 +6,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import nanoid from 'nanoid';
+import { nanoid } from 'nanoid';
+import { CronService } from 'src/cron/cron.service';
 import { EmailService } from 'src/email/email.service';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -19,6 +20,7 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
+    private readonly cronService: CronService,
   ) {}
 
   validateUser(email: string) {
@@ -54,18 +56,20 @@ export class AuthService {
   async signup(user: SignupDto) {
     const exists = await this.userService.findByEmail(user.email);
 
-    if (!exists) {
-      const codeConfirmation = nanoid.nanoid(10);
-      const newUser = await this.userService.createUser(user, codeConfirmation);
-
-      return await this.emailService.sendEmailConfirmation(
-        newUser.email,
-        newUser.id,
-        codeConfirmation,
-      );
+    if (exists) {
+      throw new HttpException('Email already in use', HttpStatus.FORBIDDEN);
     }
 
-    throw new HttpException('Email already in use', HttpStatus.FORBIDDEN);
+    const codeConfirmation = nanoid(10);
+    const newUser = await this.userService.createUser(user, codeConfirmation);
+
+    await this.emailService.sendEmailConfirmation(
+      newUser.email,
+      newUser.id,
+      codeConfirmation,
+    );
+
+    this.cronService.jobToDeleteNotConfirmedAccount(newUser.id);
   }
 
   async confirmAccount(userId: string, codeConfirmation: string) {
@@ -76,6 +80,13 @@ export class AuthService {
 
     if (user.account_confirmed.code_confirmation !== codeConfirmation) {
       throw new HttpException('Invalid credentials', HttpStatus.FORBIDDEN);
+    }
+
+    if (user.account_confirmed.confirmed) {
+      throw new HttpException(
+        'Account already confirmed',
+        HttpStatus.NOT_ACCEPTABLE,
+      );
     }
 
     return await this.userService.confirmAccount(userId);

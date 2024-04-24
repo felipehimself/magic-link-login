@@ -54,7 +54,7 @@ export class AuthController {
   async signup(@Body() body: SignupDto, @Res() res: Response) {
     await this.authService.signup(body);
 
-    return res.json({ success: true, message: 'Successfully signed up!' });
+    return res.json({ success: true, message: 'Email sent!' });
   }
 
   @Get('confirm-account')
