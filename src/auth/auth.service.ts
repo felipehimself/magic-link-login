@@ -23,8 +23,8 @@ export class AuthService {
     private readonly cronService: CronService,
   ) {}
 
-  validateUser(email: string) {
-    const user = this.userService.findOneByEmail(email);
+  async validateUser(email: string) {
+    const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException();
     }
@@ -32,7 +32,7 @@ export class AuthService {
     return user;
   }
 
-  async generateToken(user: User) {
+  async generateTokens(user: User) {
     const payload = { sub: user.id, email: user.email };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -50,6 +50,8 @@ export class AuthService {
       }),
     ]);
 
+    await this.userService.updateRefreshToken(user.id, refreshToken);
+
     return { accessToken, refreshToken };
   }
 
@@ -57,6 +59,7 @@ export class AuthService {
     const exists = await this.userService.findByEmail(user.email);
 
     if (exists) {
+      // TODO: se não tiver confirmado, enviar email de confirmação
       throw new HttpException('Email already in use', HttpStatus.FORBIDDEN);
     }
 
@@ -83,6 +86,8 @@ export class AuthService {
     }
 
     if (user.account_confirmed.confirmed) {
+      // TODO:
+      // Tratar erro no front... se retornar esse status, redirecionar p/ login msm assim
       throw new HttpException(
         'Account already confirmed',
         HttpStatus.NOT_ACCEPTABLE,
@@ -90,5 +95,18 @@ export class AuthService {
     }
 
     return await this.userService.confirmAccount(userId);
+  }
+
+  generateAccessToken(email: string, id: string) {
+    const payload = { sub: id, email: email };
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_SECRET'),
+      expiresIn: this.configService.get('JWT_EXPIRATION'),
+      issuer: this.configService.get('JWT_ISSUER'),
+      audience: this.configService.get('JWT_AUDIENCE'),
+    });
+
+    return accessToken;
   }
 }

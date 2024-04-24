@@ -26,6 +26,7 @@ model User {
   created_at        DateTime        @default(now())
   update_at         DateTime        @updatedAt
   account_confirmed ConfirmAccount?
+  user_session     UserSession?
 }
 
 model ConfirmAccount {
@@ -35,4 +36,12 @@ model ConfirmAccount {
   code_confirmation String   @unique
   created_at        DateTime @default(now())
   update_at         DateTime @updatedAt
+}
+
+model UserSession {
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String   @unique
+  refresh_token String
+  created_at    DateTime @default(now())
+  update_at     DateTime @updatedAt
 }

@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import Strategy from 'passport-magic-login';
-import { User } from 'src/users/entities/user.entity';
 import { AuthService } from '../auth.service';
 
 @Injectable()
@@ -26,12 +25,16 @@ export class MagicLoginStrategy extends PassportStrategy(
         // TODO:
         // send the email...
       },
-      verify: async (payload: { destination: string }, callback: (err?: Error | null, user?: User, info?: any) => void, ) => callback(null, this.validate(payload)),
+      // TODO: tipar User corretamente...
+      verify: async (
+        payload: { destination: string },
+        callback: (err?: Error | null, user?: any, info?: any) => void,
+      ) => callback(null, this.validate(payload)),
     });
   }
 
-  validate(payload: { destination: string }) {
-    const user = this.authService.validateUser(payload.destination);
+  async validate(payload: { destination: string }) {
+    const user = await this.authService.validateUser(payload.destination);
 
     return user;
   }

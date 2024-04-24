@@ -1,7 +1,6 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
-import { AuthGuard } from '@nestjs/passport';
-
+import { JwtGuard } from './shared/guards/jwt-guard';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -11,10 +10,10 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @UseGuards(AuthGuard('jwt-strategy'))
+  @UseGuards(JwtGuard)
   @Get('protected')
   getProtected(@Req() req): string {
-    return req.user;
-    // return 'Hello World!';
+    // return req.user;
+    return 'Hello World from protected!';
   }
 }
