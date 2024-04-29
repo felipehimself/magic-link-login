@@ -44,12 +44,25 @@ export class UsersService {
   }
 
   async confirmAccount(id: string) {
-    return await this.prisma.confirmAccount.update({
-      where: { userId: id },
-      data: {
-        confirmed: true,
-      },
-    });
+    // return await this.prisma.confirmAccount.update({
+    //   where: { userId: id },
+    //   data: {
+    //     confirmed: true,
+    //   },
+    // });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, user] = await this.prisma.$transaction([
+      this.prisma.confirmAccount.update({
+        where: { userId: id },
+        data: {
+          confirmed: true,
+        },
+      }),
+      this.prisma.user.findFirst({ where: { id } }),
+    ]);
+
+    return user;
   }
 
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
@@ -57,14 +70,13 @@ export class UsersService {
       where: { id: userId },
       include: {
         user_session: true,
-      }
+      },
     });
 
     const refreshMatches = await bcrypt.compare(
       refreshToken,
-      user.user_session.refresh_token
+      user.user_session.refresh_token,
     );
-
 
     if (refreshMatches) {
       return user;

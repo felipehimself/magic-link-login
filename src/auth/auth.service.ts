@@ -2,14 +2,13 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { nanoid } from 'nanoid';
 import { CronService } from 'src/cron/cron.service';
 import { EmailService } from 'src/email/email.service';
-import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { SignupDto } from './dtos/signup.dto';
 
@@ -26,14 +25,14 @@ export class AuthService {
   async validateUser(email: string) {
     const user = await this.userService.findByEmail(email);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new NotFoundException('User not found');
     }
 
     return user;
   }
 
-  async generateTokens(user: User) {
-    const payload = { sub: user.id, email: user.email };
+  async generateTokens({ id, email }: { id: string; email: string }) {
+    const payload = { sub: id, email: email };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
@@ -50,7 +49,7 @@ export class AuthService {
       }),
     ]);
 
-    await this.userService.updateRefreshToken(user.id, refreshToken);
+    await this.userService.updateRefreshToken(id, refreshToken);
 
     return { accessToken, refreshToken };
   }
@@ -95,6 +94,7 @@ export class AuthService {
     }
 
     return await this.userService.confirmAccount(userId);
+    // returnar o usuário se o await acima funcionar...
   }
 
   generateAccessToken(email: string, id: string) {

@@ -13,7 +13,11 @@ export class EmailService {
 
   private frontendURL = this.configService.get('FRONTEND_URL');
 
-  async sendEmailConfirmation(email: string, userId: string, codeConfirmation: string) {
+  async sendEmailConfirmation(
+    email: string,
+    userId: string,
+    codeConfirmation: string,
+  ) {
     // const html = EmailTemplate.confirmAccountTemplate(userId, this.frontendURL);
 
     // try {
@@ -25,7 +29,7 @@ export class EmailService {
     // }
 
     this.logger.debug(
-      `${this.frontendURL}/api/auth/confirm-account?userId=${userId}&codeConfirmation=${codeConfirmation}`,
+      `Sending email to ${email} with link: ${this.frontendURL}/confirm-account?userId=${userId}&codeConfirmation=${codeConfirmation}`,
     );
   }
 

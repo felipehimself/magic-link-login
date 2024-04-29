@@ -31,13 +31,14 @@ export class AuthController {
   JWT_MAX_AGE = this.configService.get('JWT_MAX_AGE');
   REFRESH_TOKEN_MAX_AGE = this.configService.get('REFRESH_TOKEN_MAX_AGE');
 
-  @Post('login')
-  login(
+  @Post('signin')
+  async signin(
     @Req() req,
     @Res() res: Response,
     @Body(new ValidationPipe()) { destination }: LoginDTO,
   ) {
-    this.authService.validateUser(destination);
+    await this.authService.validateUser(destination);
+
     return this.strategy.send(req, res);
   }
 
@@ -59,21 +60,44 @@ export class AuthController {
     });
   }
 
-  @Post('sign-up')
+  @Post('signup')
   async signup(@Body() body: SignupDto, @Res() res: Response) {
     await this.authService.signup(body);
 
     return res.json({ success: true, message: 'Email sent!' });
   }
 
-  @Get('confirm-account')
+  @Post('confirm-account')
   async confirmAccount(
     @Query('userId') userId: string,
     @Query('codeConfirmation') codeConfirmation: string,
+    @Req() req,
+    @Res() res: Response,
   ) {
-    await this.authService.confirmAccount(userId, codeConfirmation);
+    
+    const user = await this.authService.confirmAccount(
+      userId,
+      codeConfirmation,
+    );
 
-    return true;
+    const { accessToken, refreshToken } = await this.authService.generateTokens(
+      {
+        email: user.email,
+        id: user.id,
+      },
+    );
+
+    res.setHeader('Set-Cookie', [
+      `magic-link-accessToken=${accessToken}; HttpOnly; Path=/; Secure; Max-Age=${this.JWT_MAX_AGE}`,
+      `magic-link-refreshToken=${refreshToken}; HttpOnly; Path=/; Secure; Max-Age=${this.REFRESH_TOKEN_MAX_AGE}`,
+    ]);
+
+    res.json({
+      success: true,
+      message: 'Account confirmed!',
+    });
+
+    
   }
 
   @HttpCode(200)
@@ -116,5 +140,4 @@ export class AuthController {
       message: 'Updated',
     });
   }
-
 }
