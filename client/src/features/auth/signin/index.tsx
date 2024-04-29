@@ -1,9 +1,9 @@
-import { AxiosError } from 'axios';
+import { toaster } from '@/lib/toast';
 import { useState } from 'react';
-import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import styles from '../../../styles/index.module.css';
 import { useSignin } from './api/post-signin';
-// import toast from ''
+
 export const Signin = () => {
   const [emailError, setEmailError] = useState('');
 
@@ -28,39 +28,36 @@ export const Signin = () => {
       {
         onSuccess: () => {
           form.reset();
-          toast.success('Check your e-mail to get you access link');
-        },
-        onError: (e: AxiosError) => {
-          toast.error(e as unknown as string);
+          toaster('success', 'Check your e-mail to get your access link');
         },
       },
     );
   };
 
   return (
-    <section className="container">
-      <h3 className="text-center login-header">
+    <section className={styles.container}>
+      <h3 className={`${styles.textCenter} ${styles.loginHeader}`}>
         Welcome to Magic Link Project!
       </h3>
 
-      <form noValidate onSubmit={handleSubmit} className="form">
-        <div className="form-control">
+      <form noValidate onSubmit={handleSubmit}>
+        <div className={styles.formControl}>
           <input
             name="email"
             placeholder="Email"
-            className="fit-container"
+            className={styles.fullWidth}
             type="email"
           />
-          <small className="helper-text">{emailError}</small>
+          <small className={styles.helperText}>{emailError}</small>
         </div>
-        <button disabled={isLoading} className="fit-container">
+        <button disabled={isLoading} className={styles.fullWidth}>
           Login
         </button>
       </form>
-      <p className="text-center mt">
+      <p className={`${styles.textCenter} ${styles.mt} `}>
         Click <Link to="/signup">here</Link> if you haven't registered yet
       </p>
-      <p className="signin-footer">
+      <p className={styles.signinFooter}>
         This is a simple project to show off how a Magic Link Login works :)
       </p>
     </section>

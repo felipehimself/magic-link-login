@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-
+import styles from './../styles/index.module.css';
 export const ArrowLeft = () => {
   return (
-    <Link title="Signin" to="/" className="arrow-left">
+    <Link title="Signin" to="/" className={styles.arrowLeft}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="20"

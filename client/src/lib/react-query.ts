@@ -21,7 +21,10 @@ export type ExtractFnReturnType<
   FnType extends (...args: T[]) => Promise<AxiosResponse<unknown>>,
 > = Awaited<ReturnType<FnType>>;
 
-export type QueryConfig<T, QueryFnType extends (...args: T[]) => Promise<AxiosResponse<unknown>>> = Omit<
+export type QueryConfig<
+  T,
+  QueryFnType extends (...args: T[]) => Promise<AxiosResponse<unknown>>,
+> = Omit<
   UseQueryOptions<ExtractFnReturnType<T, QueryFnType>>,
   'queryKey' | 'queryFn'
 >;

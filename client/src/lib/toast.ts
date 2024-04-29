@@ -1,7 +1,9 @@
-import { toast, ToastType } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
-export const toaster = (type: ToastType, message: string) => {
-  
-  
-
+type TSeverity = 'success' | 'error' | 'loading';
+export const toaster = (severity: TSeverity, message: string) => {
+  toast[severity](message, {
+    duration: 3000,
+    position: 'top-center',
+  });
 };

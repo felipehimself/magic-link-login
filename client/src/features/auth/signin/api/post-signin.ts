@@ -1,16 +1,19 @@
 import { axiosInstance } from '@/lib/axios';
 import { MutationConfig } from '@/lib/react-query';
-import { AxiosResponse } from 'axios';
+import { toaster } from '@/lib/toast';
+import { AxiosError, AxiosResponse } from 'axios';
 import { useMutation } from 'react-query';
 
 type TSignin = {
   destination: string;
 };
 
-export const postSignin = async ({ destination }: TSignin) : Promise<AxiosResponse<null>> => {
+export const postSignin = async ({
+  destination,
+}: TSignin): Promise<AxiosResponse<null>> => {
   const axios = await axiosInstance();
 
-  return axios.post('/signin', { destination });
+  return axios.post('/auth/signin', { destination });
 };
 
 type UseSigninOptions = {
@@ -24,7 +27,9 @@ export const useSignin = ({ config }: UseSigninOptions = {}) => {
     // onMutate: async ({ destination }) => {},
     // onSuccess: () => {},
 
-    // onError: () => {},
+    onError: (e: AxiosError) => {
+      toaster('error', e as unknown as string);
+    },
     ...config,
 
     mutationFn: postSignin,

@@ -1,0 +1,56 @@
+.container {
+  max-width: 24rem;
+  margin-top: 6rem;
+  margin-inline: auto;
+}
+
+.loginHeader {
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.formControl {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.8rem;
+}
+
+.helperText {
+  color: rgb(216, 68, 68);
+  margin-left: 0.5rem;
+}
+
+.mt {
+  margin-top: 1rem;
+}
+
+.signinFooter {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.centerFlexCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+.flexRow {
+  display: flex;
+}
+
+.arrowLeft {
+  position: absolute;
+  left: 10px;
+  bottom: -6px;
+}
