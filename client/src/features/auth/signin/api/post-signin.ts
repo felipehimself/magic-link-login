@@ -3,10 +3,7 @@ import { MutationConfig } from '@/lib/react-query';
 import { toaster } from '@/lib/toast';
 import { AxiosError, AxiosResponse } from 'axios';
 import { useMutation } from 'react-query';
-
-type TSignin = {
-  destination: string;
-};
+import { TSignin } from '@/types';
 
 export const postSignin = async ({
   destination,

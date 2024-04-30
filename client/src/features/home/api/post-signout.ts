@@ -1,29 +1,26 @@
 import { axiosInstance } from '@/lib/axios';
 import { MutationConfig } from '@/lib/react-query';
 import { toaster } from '@/lib/toast';
-import { TSignup } from '@/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import { useMutation } from 'react-query';
 
-export const postSignup = async (
-  body: TSignup,
-): Promise<AxiosResponse<null>> => {
+export const postSignout = async (): Promise<AxiosResponse<null>> => {
   const axios = await axiosInstance();
 
-  return axios.post('/auth/signup', body);
+  return axios.post('/auth/signout');
 };
 
-type UseSignupOptions = {
-  config?: MutationConfig<TSignup, typeof postSignup>;
+type UseSignoutOptions = {
+  config?: MutationConfig<null, typeof postSignout>;
 };
 
-export const useSignup = ({ config }: UseSignupOptions = {}) => {
+export const useSignout = ({ config }: UseSignoutOptions = {}) => {
   return useMutation({
     onError: (e: AxiosError) => {
       toaster('error', e as unknown as string);
     },
     ...config,
 
-    mutationFn: postSignup,
+    mutationFn: postSignout,
   });
 };

@@ -1,9 +1,12 @@
-// import { ConfirmAccount } from '@/features/auth/confirm-account/confirm-accout';
-import SigninLayout from '@/layouts/signin-layout';
 import { axiosInstance } from '@/lib/axios';
 import { createBrowserRouter, defer, Navigate } from 'react-router-dom';
 import { lazyImport } from '../utils/lazy-import';
 
+const { Home } = lazyImport(() => import('@/features/home'), 'Home');
+const { AuthLayout } = lazyImport(
+  () => import('@/layouts/auth-layout'),
+  'AuthLayout',
+);
 const { Signin } = lazyImport(() => import('@/features/auth/signin'), 'Signin');
 const { Signup } = lazyImport(() => import('@/features/auth/signup'), 'Signup');
 const { ConfirmAccount } = lazyImport(
@@ -14,17 +17,21 @@ const { Signing } = lazyImport(
   () => import('@/features/auth/signing'),
   'Signing',
 );
+const { ProtectedLayout } = lazyImport(
+  () => import('@/layouts/protected-layout'),
+  'ProtectedLayout',
+);
 
 export const appRoutes = createBrowserRouter([
   {
     path: '/',
-    element: <SigninLayout />,
+    element: <AuthLayout />,
     loader: async () => {
       try {
         const axios = await axiosInstance();
 
         return defer({
-          isSignedIn: axios.post('/auth/is-signed-in'),
+          data: axios.post('/auth/is-signed-in'),
         });
       } catch (error) {
         console.log(error);
@@ -92,7 +99,20 @@ export const appRoutes = createBrowserRouter([
   },
   {
     path: 'home',
-    element: <div>Home!!</div>,
+    element: <ProtectedLayout />,
+    loader: async () => {
+      try {
+        const axios = await axiosInstance();
+
+        return defer({
+          data: axios.post('/auth/is-signed-in'),
+        });
+      } catch (error) {
+        console.log(error);
+        return error;
+      }
+    },
+    children: [{ index: true, element: <Home /> }],
   },
   {
     path: '*',

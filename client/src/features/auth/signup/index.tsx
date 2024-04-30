@@ -1,5 +1,5 @@
 import { ArrowLeft } from '@/components/arrow-left';
-import { Loading } from '@/components/loading/loading';
+import { Loading } from '@/components/loading';
 import { toaster } from '@/lib/toast';
 import { signupSchema, TSignup } from '@/types';
 import { searchFormErrors } from '@/utils/valid-form';

@@ -2,8 +2,7 @@ import Axios from 'axios';
 
 export const axiosInstance = async () => {
   const instance = Axios.create({
-    // pegar pelo .env
-    baseURL: 'http://localhost:3000/api',
+    baseURL: import.meta.env.VITE_API_URL,
     withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
@@ -14,8 +13,25 @@ export const axiosInstance = async () => {
     (response) => {
       return response.data;
     },
-    (error) => {
-      console.log(error);
+    async (error) => {
+      const originalRequest = error.config;
+      if (
+        error.response &&
+        error.response.status === 401 &&
+        !originalRequest._retry
+      ) {
+        originalRequest._retry = true;
+
+        try {
+          await refreshToken();
+
+          return instance(originalRequest);
+        } catch (refreshError) {
+          window.location.href = '/signin';
+          return Promise.reject(refreshError);
+        }
+      }
+
       const msg = error?.response?.data?.message;
 
       return Promise.reject(msg);
@@ -23,4 +39,18 @@ export const axiosInstance = async () => {
   );
 
   return instance;
+};
+
+const refreshToken = async () => {
+  try {
+    await fetch(`${import.meta.env.VITE_API_URL}/auth/refresh-token`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (error) {
+    console.error(error);
+  }
 };

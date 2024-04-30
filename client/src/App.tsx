@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { AppProvider } from './providers';
 // import { AppRoutes } from './routes';
 import { RouterProvider } from 'react-router-dom';
-import { Loading } from './components/loading/loading';
+import { Loading } from './components/loading';
 import { appRoutes } from './routes';
 
 export const App = () => {

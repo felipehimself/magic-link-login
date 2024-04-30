@@ -1,14 +1,14 @@
-import { Loading } from '@/components/loading/loading';
+import { Loading } from '@/components/loading';
+import { TIsSignedin } from '@/types';
 import { Suspense } from 'react';
 import { Await, Navigate, Outlet, useLoaderData } from 'react-router-dom';
 
-
-const SigninLayout = () => {
-  const { isSignedIn } = useLoaderData() as { isSignedIn: boolean };
+export const AuthLayout = () => {
+  const { data } = useLoaderData() as { data: TIsSignedin };
 
   return (
     <Suspense fallback={<Loading />}>
-      <Await key={'isSignedIn'} resolve={isSignedIn} errorElement={<Outlet />}>
+      <Await key={'isSignedIn'} resolve={data} errorElement={<Outlet />}>
         {() => {
           return <Navigate to="/home" />;
         }}
@@ -16,5 +16,3 @@ const SigninLayout = () => {
     </Suspense>
   );
 };
-
-export default SigninLayout;

@@ -24,3 +24,13 @@ export const signupSchema = z.object({
 });
 
 export type TSignup = z.infer<typeof signupSchema>;
+
+export type TSignin = {
+  destination: string;
+};
+
+export type TIsSignedin = {
+  success: boolean;
+  message: string;
+  username: string;
+};

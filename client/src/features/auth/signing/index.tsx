@@ -1,4 +1,4 @@
-import { Loading } from '@/components/loading/loading';
+import { Loading } from '@/components/loading';
 import { TLoaderDataSuccess } from '@/types';
 import { useEffect } from 'react';
 import { Link, useLoaderData, useNavigate } from 'react-router-dom';
