@@ -74,7 +74,6 @@ export class AuthController {
     @Req() req,
     @Res() res: Response,
   ) {
-    
     const user = await this.authService.confirmAccount(
       userId,
       codeConfirmation,
@@ -96,15 +95,17 @@ export class AuthController {
       success: true,
       message: 'Account confirmed!',
     });
-
-    
   }
 
   @HttpCode(200)
   @UseGuards(JwtGuard)
   @Post('is-signed-in')
-  async isSignedIn(@Req() req) {
-    return !!req.user;
+  async isSignedIn(@Req() req, @Res() res) {
+    return res.json({
+      success: true,
+      message: 'Signed in',
+      username: req.user.username,
+    });
   }
 
   @HttpCode(200)

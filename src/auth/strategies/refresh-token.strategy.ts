@@ -31,10 +31,12 @@ export class RefreshJwtStrategy extends PassportStrategy(
 
   async validate(request: Request, payload: IPayload) {
     const refreshToken = request.cookies?.['magic-link-refreshToken'];
-    console.log(payload);
+
+    const userId = payload.sub;
+
     return await this.userService.getUserIfRefreshTokenMatches(
       refreshToken,
-      payload.sub,
+      userId,
     );
   }
 }

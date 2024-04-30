@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import Strategy from 'passport-magic-login';
 import { AuthService } from '../auth.service';
@@ -10,11 +11,14 @@ export class MagicLoginStrategy extends PassportStrategy(
 ) {
   private readonly logger = new Logger(MagicLoginStrategy.name);
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {
     super({
-      secret: process.env.MAGIC_LINK_SECRET,
+      secret: configService.get('MAGIC_LINK_SECRET'),
       jwtOptions: {
-        expiresIn: '5m',
+        expiresIn: configService.get('MAGIC_LINK_EXPIRATION'),
       },
       callbackUrl: process.env.MAGIC_LINK_CALLBACK_URL,
       sendMagicLink: async (destionation: string, href: string) => {
