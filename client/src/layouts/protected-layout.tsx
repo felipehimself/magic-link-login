@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { Await, Navigate, Outlet, useLoaderData } from 'react-router-dom';
 
 export const ProtectedLayout = () => {
-  const { data } = useLoaderData() as { data: TIsSignedin };
+  const { data } = useLoaderData() as { data: { _data: TIsSignedin } };
 
   return (
     <Suspense fallback={<PageLoading />}>
