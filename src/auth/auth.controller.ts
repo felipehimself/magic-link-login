@@ -6,14 +6,17 @@ import {
   Post,
   Query,
   Req,
+  Request,
   Res,
   UseGuards,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { JwtGuard } from 'src/shared/guards/jwt-guard';
+import { RefreshTokenInterceptor } from 'src/shared/interceptors/refresh-token.interceptor';
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dtos/login.dto';
 import { SignupDto } from './dtos/signup.dto';
@@ -28,8 +31,10 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
-  JWT_MAX_AGE = this.configService.get('JWT_MAX_AGE');
-  REFRESH_TOKEN_MAX_AGE = this.configService.get('REFRESH_TOKEN_MAX_AGE');
+  JWT_MAX_EXPIRATION = +this.configService.get('JWT_EXPIRATION');
+  REFRESH_TOKEN_EXPIRATION = +this.configService.get(
+    'REFRESH_TOKEN_EXPIRATION',
+  );
 
   @Post('signin')
   async signin(
@@ -44,14 +49,14 @@ export class AuthController {
 
   @UseGuards(AuthGuard('magic-link-strategy'))
   @Get('login/callback')
-  async callback(@Req() req, @Res() res: Response) {
+  async callback(@Req() req: Request, @Res() res: Response) {
     const { accessToken, refreshToken } = await this.authService.generateTokens(
       req.user,
     );
 
     res.setHeader('Set-Cookie', [
-      `magic-link-accessToken=${accessToken}; HttpOnly; Path=/; Secure; Max-Age=${this.JWT_MAX_AGE}`,
-      `magic-link-refreshToken=${refreshToken}; HttpOnly; Path=/; Secure; Max-Age=${this.REFRESH_TOKEN_MAX_AGE}`,
+      `magic-link-accessToken=${accessToken}; HttpOnly; Path=/; Secure; Max-Age=${this.JWT_MAX_EXPIRATION}`,
+      `magic-link-refreshToken=${refreshToken}; HttpOnly; Path=/; Secure; Max-Age=${this.REFRESH_TOKEN_EXPIRATION}`,
     ]);
 
     res.json({
@@ -87,8 +92,8 @@ export class AuthController {
     );
 
     res.setHeader('Set-Cookie', [
-      `magic-link-accessToken=${accessToken}; HttpOnly; Path=/; Secure; Max-Age=${this.JWT_MAX_AGE}`,
-      `magic-link-refreshToken=${refreshToken}; HttpOnly; Path=/; Secure; Max-Age=${this.REFRESH_TOKEN_MAX_AGE}`,
+      `magic-link-accessToken=${accessToken}; HttpOnly; Path=/; Secure; Max-Age=${this.JWT_MAX_EXPIRATION}`,
+      `magic-link-refreshToken=${refreshToken}; HttpOnly; Path=/; Secure; Max-Age=${this.REFRESH_TOKEN_EXPIRATION}`,
     ]);
 
     res.json({
@@ -99,8 +104,10 @@ export class AuthController {
 
   @HttpCode(200)
   @UseGuards(JwtGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @Post('is-signed-in')
-  async isSignedIn(@Req() req, @Res() res) {
+  async isSignedIn(@Req() req: Request, @Res() res) {
+    console.log(req.user);
     return res.json({
       success: true,
       message: 'Signed in',
@@ -110,7 +117,7 @@ export class AuthController {
 
   @HttpCode(200)
   @Post('signout')
-  async logout(@Req() req: Request, @Res() res: Response) {
+  async logout(@Res() res: Response) {
     res.setHeader('Set-Cookie', [
       'magic-link-accessToken=; HttpOnly; Path=/; Secure; Max-Age=0',
       'magic-link-refreshToken=; HttpOnly; Path=/; Secure; Max-Age=0',
@@ -133,7 +140,7 @@ export class AuthController {
 
     res.setHeader(
       'Set-Cookie',
-      `magic-link-accessToken=${accessToken}; HttpOnly; Path=/; Secure; Max-Age=${this.JWT_MAX_AGE}`,
+      `magic-link-accessToken=${accessToken}; HttpOnly; Path=/; Secure; Max-Age=${this.JWT_MAX_EXPIRATION}`,
     );
 
     res.json({

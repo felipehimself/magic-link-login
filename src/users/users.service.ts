@@ -73,6 +73,8 @@ export class UsersService {
       },
     });
 
+    console.log({ userId });
+
     const refreshMatches = await bcrypt.compare(
       refreshToken,
       user.user_session.refresh_token,
@@ -83,7 +85,11 @@ export class UsersService {
     }
   }
 
-  async updateRefreshToken(userId: string, refreshToken: string) {
+  async updateRefreshToken(
+    userId: string,
+    refreshToken: string,
+    refreshTokenExpiration: number,
+  ) {
     const salts = await bcrypt.genSalt(10);
     const refreshHashed = await bcrypt.hash(refreshToken, salts);
 
@@ -93,7 +99,21 @@ export class UsersService {
       },
       data: {
         refresh_token: refreshHashed,
+        refresh_token_expiration: new Date(refreshTokenExpiration),
       },
     });
+  }
+
+  async isRefreshTokenExpired(userId: string) {
+    const { refresh_token_expiration } =
+      await this.prisma.userSession.findFirst({
+        where: {
+          userId,
+        },
+      });
+
+    const now = new Date();
+
+    return new Date(refresh_token_expiration) < now;
   }
 }

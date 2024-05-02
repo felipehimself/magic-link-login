@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { CronModule } from 'src/cron/cron.module';
 import { EmailModule } from 'src/email/email.module';
+import { RefreshTokenInterceptor } from 'src/shared/interceptors/refresh-token.interceptor';
 import { UsersModule } from 'src/users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -19,6 +20,12 @@ import { RefreshJwtStrategy } from './strategies/refresh-token.strategy';
     CronModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, MagicLoginStrategy, JwtStrategy, RefreshJwtStrategy],
+  providers: [
+    AuthService,
+    MagicLoginStrategy,
+    JwtStrategy,
+    RefreshJwtStrategy,
+    RefreshTokenInterceptor,
+  ],
 })
 export class AuthModule {}
