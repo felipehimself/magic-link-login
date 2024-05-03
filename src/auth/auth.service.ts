@@ -45,14 +45,14 @@ export class AuthService {
       this.jwtService.signAsync(payload, {
         secret: this.configService.get('JWT_SECRET'),
         expiresIn: +this.configService.get('JWT_EXPIRATION'),
-        issuer: this.configService.get('JWT_ISSUER'),
-        audience: this.configService.get('JWT_AUDIENCE'),
+        issuer: this.configService.get('TOKEN_ISSUER'),
+        audience: this.configService.get('TOKEN_AUDIENCE'),
       }),
       this.jwtService.signAsync(payload, {
         secret: this.configService.get('REFRESH_TOKEN_SECRET'),
         expiresIn: +this.configService.get('REFRESH_TOKEN_EXPIRATION'),
-        issuer: this.configService.get('REFRESH_TOKEN_ISSUER'),
-        audience: this.configService.get('REFRESH_TOKEN_AUDIENCE'),
+        issuer: this.configService.get('TOKEN_ISSUER'),
+        audience: this.configService.get('TOKEN_AUDIENCE'),
       }),
     ]);
 
@@ -90,7 +90,10 @@ export class AuthService {
 
     const user = await this.userService.findById(userId);
 
-    if (!user || user.account_confirmed.code_confirmation !== codeConfirmation) {
+    if (
+      !user ||
+      user.account_confirmed.code_confirmation !== codeConfirmation
+    ) {
       throw new HttpException('Invalid credentials', HttpStatus.FORBIDDEN);
     }
 
@@ -110,8 +113,8 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_SECRET'),
       expiresIn: +this.configService.get('JWT_EXPIRATION'),
-      issuer: this.configService.get('JWT_ISSUER'),
-      audience: this.configService.get('JWT_AUDIENCE'),
+      issuer: this.configService.get('TOKEN_ISSUER'),
+      audience: this.configService.get('TOKEN_AUDIENCE'),
     });
 
     return accessToken;
@@ -124,8 +127,8 @@ export class AuthService {
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.configService.get('REFRESH_TOKEN_SECRET'),
       expiresIn: +this.configService.get('REFRESH_TOKEN_EXPIRATION'),
-      issuer: this.configService.get('REFRESH_TOKEN_ISSUER'),
-      audience: this.configService.get('REFRESH_TOKEN_AUDIENCE'),
+      issuer: this.configService.get('TOKEN_ISSUER'),
+      audience: this.configService.get('TOKEN_AUDIENCE'),
     });
 
     const expirationDate = this.generateRefreshTokenExpirationDate();
