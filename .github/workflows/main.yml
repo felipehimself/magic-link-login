@@ -16,45 +16,45 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
     
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
         
-    - name: Install frontend dependencies
-    - run: |
-        cd client
-        npm install
+      - name: Install frontend dependencies
+        run: |
+          cd client
+          npm install
 
-    - name: Build Frontend
-    - env:
-        VITE_API_URL: ${{ secrets.VITE_API_URL }}
-    - run: npm run build --if-present
+      - name: Build Frontend
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+        run: npm run build --if-present
     
-    - name: Go back to root folder
-    - run: cd ..
+      - name: Go back to root folder
+        run: cd ..
 
-    - name: Build API
-    - env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
-        JWT_EXPIRATION: ${{ secrets.JWT_EXPIRATION }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        MAGIC_LINK_CALLBACK_URL: ${{ secrets.MAGIC_LINK_CALLBACK_URL }}
-        MAGIC_LINK_EXPIRATION: ${{ secrets.MAGIC_LINK_EXPIRATION }}
-        MAGIC_LINK_SECRET: ${{ secrets.MAGIC_LINK_SECRET }}
-        REFRESH_TOKEN_EXPIRATION: ${{ secrets.REFRESH_TOKEN_EXPIRATION }}
-        REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
-        TOKEN_AUDIENCE: ${{ secrets.TOKEN_AUDIENCE }}
-        TOKEN_ISSUER: ${{ secrets.TOKEN_ISSUER }}  
-    - run: npm run build:prod
+      - name: Build API
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          JWT_EXPIRATION: ${{ secrets.JWT_EXPIRATION }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          MAGIC_LINK_CALLBACK_URL: ${{ secrets.MAGIC_LINK_CALLBACK_URL }}
+          MAGIC_LINK_EXPIRATION: ${{ secrets.MAGIC_LINK_EXPIRATION }}
+          MAGIC_LINK_SECRET: ${{ secrets.MAGIC_LINK_SECRET }}
+          REFRESH_TOKEN_EXPIRATION: ${{ secrets.REFRESH_TOKEN_EXPIRATION }}
+          REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+          TOKEN_AUDIENCE: ${{ secrets.TOKEN_AUDIENCE }}
+          TOKEN_ISSUER: ${{ secrets.TOKEN_ISSUER }}  
+        run: npm run build:prod
 
   deploy:
     name: Deploy to Render
-      # needs: [test] # Our tests must pass in order to run the deploy job
+    # needs: [test] # Our tests must pass in order to run the deploy job
     runs-on: ubuntu-latest
   
     steps: 
@@ -63,4 +63,3 @@ jobs:
          with:
            service-id: ${{ secrets.RENDER_SERVICE_ID }}
            api-key: ${{ secrets.RENDER_API_KEY }}
-  
