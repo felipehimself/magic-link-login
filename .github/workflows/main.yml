@@ -32,10 +32,12 @@ jobs:
       - name: Build Frontend
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
-        run: npm run build --if-present
+        run: |
+          cd client
+          npm run build --if-present
     
-      - name: Go back to root folder
-        run: cd ..
+      # - name: Go back to root folder
+      #   run: cd ..
 
       - name: Build API
         env:
