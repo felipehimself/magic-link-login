@@ -47,8 +47,7 @@ jobs:
         REFRESH_TOKEN_EXPIRATION: ${{ secrets.REFRESH_TOKEN_EXPIRATION }}
         REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
         TOKEN_AUDIENCE: ${{ secrets.TOKEN_AUDIENCE }}
-        TOKEN_ISSUER: ${{ secrets.TOKEN_ISSUER }}
-        
+        TOKEN_ISSUER: ${{ secrets.TOKEN_ISSUER }}  
     - run: npm run build:prod
 
   deploy:
