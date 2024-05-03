@@ -73,8 +73,6 @@ export class UsersService {
       },
     });
 
-    console.log({ userId });
-
     const refreshMatches = await bcrypt.compare(
       refreshToken,
       user.user_session.refresh_token,

@@ -107,7 +107,7 @@ export class AuthController {
   @UseInterceptors(RefreshTokenInterceptor)
   @Post('is-signed-in')
   async isSignedIn(@Req() req: Request, @Res() res) {
-    console.log(req.user);
+    
     return res.json({
       success: true,
       message: 'Signed in',

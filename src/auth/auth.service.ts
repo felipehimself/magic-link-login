@@ -24,7 +24,7 @@ export class AuthService {
     private readonly cronService: CronService,
   ) {}
 
-  private readonly logger = new Logger('Auth Service');
+  private readonly logger = new Logger('Auth Service Logger');
 
   async validateUser(email: string) {
     this.logger.debug(`Validating user ${email} to sign in`);
@@ -87,26 +87,20 @@ export class AuthService {
 
   async confirmAccount(userId: string, codeConfirmation: string) {
     this.logger.debug(`Confirming account for user id: ${userId}`);
+
     const user = await this.userService.findById(userId);
-    if (!user) {
+
+    if (!user || user.account_confirmed.code_confirmation !== codeConfirmation) {
       throw new HttpException('Invalid credentials', HttpStatus.FORBIDDEN);
     }
 
-    if (user.account_confirmed.code_confirmation !== codeConfirmation) {
-      throw new HttpException('Invalid credentials', HttpStatus.FORBIDDEN);
-    }
+    // if (user.account_confirmed.code_confirmation !== codeConfirmation) {
+    //   throw new HttpException('Invalid credentials', HttpStatus.FORBIDDEN);
+    // }
 
-    if (user.account_confirmed.confirmed) {
-      // TODO:
-      // Tratar erro no front... se retornar esse status, redirecionar p/ login msm assim
-      throw new HttpException(
-        'Account already confirmed',
-        HttpStatus.NOT_ACCEPTABLE,
-      );
-    }
+    if (user.account_confirmed.confirmed) return user;
 
     return await this.userService.confirmAccount(userId);
-    // returnar o usuário se o await acima funcionar...
   }
 
   generateAccessToken(email: string, id: string) {
