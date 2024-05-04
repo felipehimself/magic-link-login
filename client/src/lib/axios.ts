@@ -2,7 +2,7 @@ import Axios from 'axios';
 
 export const axiosInstance = async () => {
   const instance = Axios.create({
-    baseURL: import.meta.env.VITE_API_URL + '/api',
+    baseURL: '/api',
     withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ export const axiosInstance = async () => {
 
 const refreshToken = async () => {
   try {
-    await fetch(`${import.meta.env.VITE_API_URL}/api/auth/refresh-token`, {
+    await fetch('/api/auth/refresh-token', {
       method: 'POST',
       credentials: 'include',
       headers: {
