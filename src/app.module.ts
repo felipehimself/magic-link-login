@@ -22,13 +22,12 @@ import { CronModule } from './cron/cron.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'client/dist'),
       exclude: ['/api/*'],
-      renderPath: '/',
     }),
     UsersModule,
     AuthModule,
     PrismaModule,
     EmailModule,
-    CronModule
+    CronModule,
   ],
   controllers: [AppController],
   providers: [AppService],
