@@ -1,0 +1,11 @@
+version: '3'
+services:
+  # Service for production
+  production:
+    image: 'magic-link'     
+    env_file: 
+    - ./client/.env
+    - ./.production.env
+
+    ports:
+      - "3000:3000"

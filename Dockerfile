@@ -4,27 +4,30 @@ WORKDIR /app
 COPY ./client/package.json ./client/package-lock.json ./
 RUN npm install
 
-# Files from client are placed inside app
 COPY ./client ./
 RUN npm run build
 
 
 # Stage 2: Build the Nest.js API
 FROM node:alpine as nest-build
-# tentando remover client folder...
+
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
+
 COPY . .
 RUN rm -rf client
 RUN npm run build:prod
 
-# From client root folder, copies dist files and place it in app/client/dist in the nest app
+FROM node:18-alpine As production
+
 COPY --from=react-build /app/dist /app/client/dist
+COPY --from=nest-build /app/dist /app/dist
+COPY --from=nest-build /app/node_modules /app/node_modules
 
 
 EXPOSE 3000
 
 # Command to run your Nest.js API
-CMD ["node", "./dist/main"]
+CMD ["node", "app/dist/main.js"]
 
