@@ -45,7 +45,7 @@ model ConfirmAccount {
 model UserSession {
   user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                   String    @unique
-  refresh_token            String
+  refresh_token            String?
   refresh_token_expiration DateTime?
   created_at               DateTime  @default(now())
   update_at                DateTime  @updatedAt

@@ -26,10 +26,11 @@ export class MagicLoginStrategy extends PassportStrategy(
           `Sending magic link to ${destionation} with href ${href}`,
         );
 
-        // TODO:
-        // send the email...
+        await this.authService.sendMagicLinkEmail({
+          email: destionation,
+          url: href,
+        });
       },
-      // TODO: tipar User corretamente...
       verify: async (
         payload: { destination: string },
         callback: (err?: Error | null, user?: any, info?: any) => void,

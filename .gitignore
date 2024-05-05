@@ -63,3 +63,6 @@ prisma/migrations/*
 
 # sqlite db
 *.db
+
+# todo
+todo.md

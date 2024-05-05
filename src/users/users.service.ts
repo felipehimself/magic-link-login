@@ -14,6 +14,12 @@ export class UsersService {
     });
   }
 
+  async findByUsername(username: string) {
+    return await this.prisma.user.findFirst({
+      where: { username },
+    });
+  }
+
   async createUser(user: SignupDto, codeConfirmation: string) {
     return await this.prisma.user.create({
       data: {
@@ -25,7 +31,7 @@ export class UsersService {
         },
         user_session: {
           create: {
-            refresh_token: '',
+            refresh_token: null,
           },
         },
       },
@@ -75,7 +81,7 @@ export class UsersService {
 
     const refreshMatches = await bcrypt.compare(
       refreshToken,
-      user.user_session.refresh_token,
+      user.user_session.refresh_token ?? '',
     );
 
     if (refreshMatches) {

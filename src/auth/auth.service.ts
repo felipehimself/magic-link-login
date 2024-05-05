@@ -13,6 +13,7 @@ import { EmailService } from 'src/email/email.service';
 import { UsersService } from 'src/users/users.service';
 import { SignupDto } from './dtos/signup.dto';
 import { IGenerateToken } from './interfaces/generate-token.interface';
+import { ISendMagicLink } from 'src/shared/interfaces/send-magic-link.interface';
 
 @Injectable()
 export class AuthService {
@@ -30,8 +31,13 @@ export class AuthService {
     this.logger.debug(`Validating user ${email} to sign in`);
     const user = await this.userService.findByEmail(email);
     if (!user) {
-      this.logger.warn(`User ${email} not found`);
+      this.logger.error(`User ${email} not found`);
       throw new NotFoundException('User not found');
+    }
+
+    if (!user.account_confirmed.confirmed) {
+      this.logger.error(`Account not confirmed for user ${email}`);
+      throw new HttpException('Account not confirmed', HttpStatus.FORBIDDEN);
     }
 
     return user;
@@ -39,6 +45,7 @@ export class AuthService {
 
   async generateTokens({ id, email }: IGenerateToken) {
     this.logger.debug(`Generating tokens for user ${email}`);
+
     const payload = { sub: id, email: email };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -66,23 +73,38 @@ export class AuthService {
 
   async signup(user: SignupDto) {
     this.logger.debug(`Signing up user ${user.email}`);
-    const exists = await this.userService.findByEmail(user.email);
+    const emailInUse = await this.userService.findByEmail(user.email);
 
-    if (exists) {
-      // TODO: se não tiver confirmado, enviar email de confirmação
+    if (emailInUse) {
+      this.logger.error(`Email already in use: ${user.email}`);
+
       throw new HttpException('Email already in use', HttpStatus.FORBIDDEN);
+    }
+
+    const usernameInUse = await this.userService.findByUsername(user.username);
+
+    if (usernameInUse) {
+      this.logger.error(`Username already in use: ${user.username}`);
+
+      throw new HttpException('Username already in use', HttpStatus.FORBIDDEN);
     }
 
     const codeConfirmation = nanoid(10);
     const newUser = await this.userService.createUser(user, codeConfirmation);
 
-    await this.emailService.sendEmailConfirmation(
-      newUser.email,
-      newUser.id,
-      codeConfirmation,
-    );
+    await this.emailService.sendEmailConfirmation({
+      email: newUser.email,
+      userId: newUser.id,
+      codeConfirmation: codeConfirmation,
+    });
 
     this.cronService.jobToDeleteNotConfirmedAccount(newUser.id);
+  }
+
+  async sendMagicLinkEmail({ email, url }: ISendMagicLink) {
+    this.logger.debug(`Sending magic link to ${url}`);
+
+    await this.emailService.sendMagicLinkEmail({ email, url });
   }
 
   async confirmAccount(userId: string, codeConfirmation: string) {
@@ -96,10 +118,6 @@ export class AuthService {
     ) {
       throw new HttpException('Invalid credentials', HttpStatus.FORBIDDEN);
     }
-
-    // if (user.account_confirmed.code_confirmation !== codeConfirmation) {
-    //   throw new HttpException('Invalid credentials', HttpStatus.FORBIDDEN);
-    // }
 
     if (user.account_confirmed.confirmed) return user;
 
