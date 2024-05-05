@@ -14,7 +14,7 @@
     "start:prod-test": "SET NODE_ENV=production&& nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "migrate:sqlite": "dotenv -e .development.env -- npx prisma migrate dev",
+    "migrate:postgres:dev": "dotenv -e .development.env -- npx prisma migrate dev",
     "migrate:postgres:prod": "dotenv -e .production.env -- npx prisma migrate dev",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
