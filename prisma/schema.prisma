@@ -8,17 +8,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Users {
   id                String          @id @default(uuid())
   email             String          @unique
   name              String
@@ -28,11 +23,11 @@ model User {
   account_confirmed ConfirmAccount?
   user_session      UserSession?
 
-  @@map("user")
+  @@map("users")
 }
 
 model ConfirmAccount {
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId            String   @unique
   confirmed         Boolean  @default(false)
   code_confirmation String   @unique
@@ -43,7 +38,7 @@ model ConfirmAccount {
 }
 
 model UserSession {
-  user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                     Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                   String    @unique
   refresh_token            String?
   refresh_token_expiration DateTime?

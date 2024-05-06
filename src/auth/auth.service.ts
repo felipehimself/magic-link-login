@@ -10,10 +10,10 @@ import { JwtService } from '@nestjs/jwt';
 import { nanoid } from 'nanoid';
 import { CronService } from 'src/cron/cron.service';
 import { EmailService } from 'src/email/email.service';
+import { ISendMagicLink } from 'src/shared/interfaces/send-magic-link.interface';
 import { UsersService } from 'src/users/users.service';
 import { SignupDto } from './dtos/signup.dto';
 import { IGenerateToken } from './interfaces/generate-token.interface';
-import { ISendMagicLink } from 'src/shared/interfaces/send-magic-link.interface';
 
 @Injectable()
 export class AuthService {

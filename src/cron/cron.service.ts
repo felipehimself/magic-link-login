@@ -18,7 +18,7 @@ export class CronService {
     const { minute, hour, day } = this.generateCronTime();
 
     const job = new CronJob(`${minute} ${hour} * * ${day}`, async () => {
-      const user = await this.prisma.user.findUnique({
+      const user = await this.prisma.users.findUnique({
         where: {
           id: userId,
         },
@@ -28,7 +28,7 @@ export class CronService {
       });
 
       if (!user?.account_confirmed?.confirmed) {
-        await this.prisma.user.delete({
+        await this.prisma.users.delete({
           where: {
             id: userId,
           },

@@ -8,20 +8,20 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async findByEmail(email: string) {
-    return await this.prisma.user.findFirst({
+    return await this.prisma.users.findFirst({
       where: { email },
       include: { account_confirmed: true },
     });
   }
 
   async findByUsername(username: string) {
-    return await this.prisma.user.findFirst({
+    return await this.prisma.users.findFirst({
       where: { username },
     });
   }
 
   async createUser(user: SignupDto, codeConfirmation: string) {
-    return await this.prisma.user.create({
+    return await this.prisma.users.create({
       data: {
         ...user,
         account_confirmed: {
@@ -39,11 +39,11 @@ export class UsersService {
   }
 
   async deleteUser(id: string) {
-    return await this.prisma.user.delete({ where: { id } });
+    return await this.prisma.users.delete({ where: { id } });
   }
 
   async findById(id: string) {
-    return await this.prisma.user.findFirst({
+    return await this.prisma.users.findFirst({
       where: { id },
       include: { account_confirmed: true },
     });
@@ -65,14 +65,14 @@ export class UsersService {
           confirmed: true,
         },
       }),
-      this.prisma.user.findFirst({ where: { id } }),
+      this.prisma.users.findFirst({ where: { id } }),
     ]);
 
     return user;
   }
 
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
-    const user = await this.prisma.user.findFirstOrThrow({
+    const user = await this.prisma.users.findFirstOrThrow({
       where: { id: userId },
       include: {
         user_session: true,
