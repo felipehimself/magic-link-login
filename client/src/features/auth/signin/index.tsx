@@ -1,3 +1,4 @@
+import { Loading } from '@/components/loading';
 import { toaster } from '@/lib/toast';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -39,7 +40,6 @@ export const Signin = () => {
       <h3 className={`${styles.textCenter} ${styles.loginHeader}`}>
         Welcome to Magic Link Project!
       </h3>
-
       <form noValidate onSubmit={handleSubmit}>
         <div className={styles.formControl}>
           <input
@@ -60,6 +60,7 @@ export const Signin = () => {
       <p className={styles.signinFooter}>
         This is a simple project to show off how a Magic Link Login works :)
       </p>
+       {isLoading && <Loading />}
     </section>
   );
 };
