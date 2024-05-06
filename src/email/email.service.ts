@@ -40,7 +40,9 @@ export class EmailService {
       );
     }
 
-    this.logger.debug(`Sending email to ${email} with link: ${url}`);
+    this.logger.debug(
+      `Sending email confirmation to ${email} with link: ${url}`,
+    );
   }
 
   async sendMagicLinkEmail({ email, url }: ISendMagicLink) {

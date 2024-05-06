@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import Strategy from 'passport-magic-login';
 import { AuthService } from '../auth.service';
+import { IValidateMagicLogin } from './../interfaces/validate-magic-login.interface';
 
 @Injectable()
 export class MagicLoginStrategy extends PassportStrategy(
@@ -33,12 +34,18 @@ export class MagicLoginStrategy extends PassportStrategy(
       },
       verify: async (
         payload: { destination: string },
-        callback: (err?: Error | null, user?: any, info?: any) => void,
+        callback: (
+          err?: Error | null,
+          user?: Promise<IValidateMagicLogin>,
+          info?: any,
+        ) => void,
       ) => callback(null, this.validate(payload)),
     });
   }
 
-  async validate(payload: { destination: string }) {
+  async validate(payload: {
+    destination: string;
+  }): Promise<IValidateMagicLogin> {
     const user = await this.authService.validateUser(payload.destination);
 
     return user;

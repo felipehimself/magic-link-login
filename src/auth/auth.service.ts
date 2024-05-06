@@ -102,8 +102,6 @@ export class AuthService {
   }
 
   async sendMagicLinkEmail({ email, url }: ISendMagicLink) {
-    this.logger.debug(`Sending magic link to ${url}`);
-
     await this.emailService.sendMagicLinkEmail({ email, url });
   }
 
