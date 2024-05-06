@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodeOutlook from 'nodejs-nodemailer-outlook';
-import { EmailTemplate } from './template';
 import { ISendMagicLink } from 'src/shared/interfaces/send-magic-link.interface';
 import { ISendEmailConfirmation } from './interfaces/send-email-confirmaton.interface';
+import { EmailTemplate } from './template';
 
 @Injectable()
 export class EmailService {
@@ -16,6 +16,8 @@ export class EmailService {
   private frontendURL = this.configService.get('FRONTEND_URL');
   private emailAccount = this.configService.get('EMAIL_ACC');
   private emailPassword = this.configService.get('EMAIL_PWD');
+  private environment = this.configService.get('ENVIRONMENT');
+
 
   async sendEmailConfirmation({
     email,
@@ -61,6 +63,9 @@ export class EmailService {
   }
 
   private async emailPromise(email: string, html: string, subject: string) {
+    
+    if (this.environment === 'development') return;
+
     return new Promise((resolve, reject) => {
       nodeOutlook.sendEmail({
         auth: {
