@@ -14,7 +14,7 @@ export const ProtectedLayout = () => {
         errorElement={<Navigate to="/signin" />}
       >
         {() => {
-          return <Outlet context={data} />;
+          return <Outlet />;
         }}
       </Await>
     </Suspense>

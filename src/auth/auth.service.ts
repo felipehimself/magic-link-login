@@ -174,4 +174,8 @@ export class AuthService {
     );
     return await this.userService.isRefreshTokenExpired(userId);
   }
+
+  async signoutUser(id: string) {
+    return await this.userService.signoutUser(id);
+  }
 }
