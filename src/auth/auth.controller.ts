@@ -107,7 +107,6 @@ export class AuthController {
   @UseInterceptors(RefreshTokenInterceptor)
   @Post('is-signed-in')
   async isSignedIn(@Req() req: Request, @Res() res) {
-    
     return res.json({
       success: true,
       message: 'Signed in',
@@ -116,8 +115,13 @@ export class AuthController {
   }
 
   @HttpCode(200)
+  @UseGuards(JwtGuard)
   @Post('signout')
-  async logout(@Res() res: Response) {
+  async logout(@Res() res: Response, @Req() req: Request) {
+    const { id } = req.user;
+
+    await this.authService.signoutUser(id);
+
     res.setHeader('Set-Cookie', [
       'magic-link-accessToken=; HttpOnly; Path=/; Secure; Max-Age=0',
       'magic-link-refreshToken=; HttpOnly; Path=/; Secure; Max-Age=0',

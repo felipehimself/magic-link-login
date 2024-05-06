@@ -1,16 +1,15 @@
+import { Loading } from '@/components/loading';
 import { TIsSignedin } from '@/types';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useAsyncValue, useNavigate } from 'react-router-dom';
 import styles from '../../styles/index.module.css';
 import { useSignout } from './api/post-signout';
 
 export const Home = () => {
   const { mutate, isLoading } = useSignout();
 
-  const navigate = useNavigate();
+  const { username } = useAsyncValue() as TIsSignedin;
 
-  const {
-    _data: { username },
-  } = useOutletContext<{ _data: TIsSignedin }>();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     mutate(undefined, {
@@ -27,6 +26,7 @@ export const Home = () => {
       <button onClick={handleLogout} disabled={isLoading} className={styles.mt}>
         Sign out
       </button>
+      {isLoading && <Loading />}
     </section>
   );
 };

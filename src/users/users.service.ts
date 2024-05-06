@@ -120,4 +120,14 @@ export class UsersService {
 
     return new Date(refresh_token_expiration) < now;
   }
+
+  async signoutUser(id: string) {
+    return await this.prisma.userSession.update({
+      where: { userId: id },
+      data: {
+        refresh_token: null,
+        refresh_token_expiration: null,
+      },
+    });
+  }
 }

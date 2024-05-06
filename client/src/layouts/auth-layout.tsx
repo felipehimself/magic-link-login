@@ -8,7 +8,7 @@ export const AuthLayout = () => {
 
   return (
     <Suspense fallback={<PageLoading />}>
-      <Await key={'isSignedIn'} resolve={data} errorElement={<Outlet />}>
+      <Await key='auth-layout' resolve={data} errorElement={<Outlet />}>
         {() => {
           return <Navigate to="/home" />;
         }}
