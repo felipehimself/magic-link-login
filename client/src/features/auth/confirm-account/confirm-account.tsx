@@ -7,13 +7,16 @@ import { TLoaderDataSuccess } from '@/types';
 
 export const ConfirmAccount = () => {
   const { success } = useLoaderData() as TLoaderDataSuccess;
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    setTimeout(() => {
+    const timeOut = setTimeout(() => {
       if (success) {
         navigate('/home');
       }
+
+      return () => clearTimeout(timeOut);
     }, 3000);
   }, [success, navigate]);
 

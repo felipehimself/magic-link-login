@@ -10,7 +10,7 @@ const { AuthLayout } = lazyImport(
 const { Signin } = lazyImport(() => import('@/features/auth/signin'), 'Signin');
 const { Signup } = lazyImport(() => import('@/features/auth/signup'), 'Signup');
 const { ConfirmAccount } = lazyImport(
-  () => import('@/features/auth/confirm-account/confirm-accout'),
+  () => import('@/features/auth/confirm-account/confirm-account'),
   'ConfirmAccount',
 );
 const { Signing } = lazyImport(
